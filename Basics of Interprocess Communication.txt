@@ -1,0 +1,51 @@
+1. It is like a "Who is the slowest competition", the slower process execute the final result.
+   Because the results of the earlier finished process will be overiden by the following process.
+   Unless you are lucky with the scheduler.  
+	
+2. I; for example we have two cores A and B
+      A will disable the interrupts but only for the A core 
+      the B core could however enter such region
+      if we disable interrupts for A and B the same case as in 2.II; could enter		 
+
+    II; if you are on a single core machine and disabling interrupts and if there is an infinite loop in your program for example.
+	there is no other core to do any process, so your pc would be frozen.
+ 
+3.  I; Scenario 1 
+	Proccess 0 enter the critical region, with that it block any other proccess to enter the same critcal region.
+	Next Proccess 1 wants also to enter the same region but because Proccess 0 didnt called leave_region(), 
+	Proccess 1 stuck in an infinity loop at the enter_region() function.
+	Proccess 0 calls leave_region() so the Proccess 1 can leave the loop and can enter the critical region.
+
+       Scenario 2
+	Process 0 and Process 1 go through the whole loop nearly simultaneously.
+	one of the Proccess will stuck in an infinity loop at the enter_region() function.
+
+     II;
+	Proccess 1 is dependent on the Proccess 0, so if we have only one proccess we have a problem
+     
+     III;
+	The loser is the proccess that wait to enter the critical region
+	
+     IV;
+	int loser; 
+	Bool interested[3];  
+	
+	void enter_region(int process) 
+	{ 
+		interested[process] = True; 
+		loser = process;
+ 
+		int other1;
+		int other2;
+	        if(process == 1)
+			other1 = 0;
+			other2 = 2;		
+		if(process == 2)
+			other1 = 0;
+			other2 = 1;
+		else
+			other1 = 1 - process;
+		 	other2 = 2 - process; 
+		
+		while (loser == process && interested[other1] && interested[other2] ) ; 
+	}
